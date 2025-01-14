@@ -212,187 +212,185 @@ export class MarketWatchComponent implements OnInit, OnDestroy{
   }
 
   async ngOnInit() {
-    window.addEventListener('fdc3Ready', async() => {
-      this.subject.next(
-        { 
-          Symbol: undefined,
-          DataSource: [...ELEMENT_DATA] 
-        });
+    this.subject.next(
+      { 
+        Symbol: undefined,
+        DataSource: [...ELEMENT_DATA] 
+      });
+
+    try {
+      this.channel = await window.fdc3.getOrCreateChannel('tradeIdeasChannel');
+      const listener = await this.channel.addContextListener("fdc3.trade", async(context, metadata) => {
+        const data = context['data'];
+        let symbols = ELEMENT_DATA.filter(x => x.Symbol == data.symbol && x.Children?.length && x.Children?.length > 0);
+        const topic: string = "fdc3." + data.symbol + "." + data.trader;
+
+        if (!symbols || symbols.length == 0) {
+          await this.channel!.broadcast(
+            {
+              type: topic,
+              result: {
+                success: false,
+                action: "BUY",
+                error: "No symbol found."
+              }
+            });
+
+          return;
+        }
+
+        if (data.action === 'BUY') {
+          const sumQuantity = symbols.reduce((sum, current) => {
+            if (current.Children && current.Children.length > 0) {
+              let s: number = current.Children.reduce((t, currentSymbol) => {
+                if(currentSymbol.AskSize) {
+                  return t + currentSymbol.AskSize;
+                }
+                return t + 0;
+              }, 0);
+
+              return sum + s;
+            }
+            return sum + 0;
+          }, 0);
+
   
-      try {
-        this.channel = await window.fdc3.getOrCreateChannel('tradeIdeasChannel');
-        const listener = await this.channel.addContextListener("fdc3.trade", async(context, metadata) => {
-          const data = context['data'];
-          let symbols = ELEMENT_DATA.filter(x => x.Symbol == data.symbol && x.Children?.length && x.Children?.length > 0);
-          const topic: string = "fdc3." + data.symbol + "." + data.trader;
-  
-          if (!symbols || symbols.length == 0) {
+          if (sumQuantity < data.quantity) {
             await this.channel!.broadcast(
               {
                 type: topic,
                 result: {
                   success: false,
                   action: "BUY",
-                  error: "No symbol found."
+                  error: "Too much ticks were requested; not enough symbols are available on the target."
                 }
               });
   
             return;
           }
   
-          if (data.action === 'BUY') {
-            const sumQuantity = symbols.reduce((sum, current) => {
-              if (current.Children && current.Children.length > 0) {
-                let s: number = current.Children.reduce((t, currentSymbol) => {
-                  if(currentSymbol.AskSize) {
-                    return t + currentSymbol.AskSize;
-                  }
-                  return t + 0;
-                }, 0);
-  
-                return sum + s;
-              }
-              return sum + 0;
-            }, 0);
-  
-    
-            if (sumQuantity < data.quantity) {
-              await this.channel!.broadcast(
-                {
-                  type: topic,
-                  result: {
-                    success: false,
-                    action: "BUY",
-                    error: "Too much ticks were requested; not enough symbols are available on the target."
-                  }
-                });
-    
-              return;
+          let price: number = 0;
+          let size = data.quantity;
+          for (let element of ELEMENT_DATA) {
+            if (size == 0) {
+              break;
             }
-    
-            let price: number = 0;
-            let size = data.quantity;
-            for (let element of ELEMENT_DATA) {
-              if (size == 0) {
-                break;
-              }
-  
-              if (element.Symbol != data.symbol || !element.Children || element.Children.length <= 0) {
-                continue;
-              }
-  
-              if (element.Children.at(0) && element.Children.at(0)?.AskSize && element.Children.at(0)!.AskSize! >= data.quantity) {
-                element.Children.at(0)!.AskSize! = element.Children.at(0)!.AskSize! - data.quantity;
-                element.Children.at(0)!.LastTrade = data.timestamp;
-                price = element.Children.at(0)!.AskPrice != undefined ? element.Children.at(0)!.AskPrice! * data.quantity : 0;
-                size = 0;
-  
-                await this.channel!.broadcast({
-                  type: topic,
-                  result: {
-                    success: true,
-                    action: "BUY",
-                    tradePrice: price
-                  }
-                });
-  
-                break;
-              }
-              
-              for (let innerElement of element.Children) {
-                if (innerElement.Symbol != data.symbol) {
-                  continue;
-                }
-  
-                if (innerElement.AskSize && innerElement.AskSize >= size) {
-                  price = price + size * (innerElement.AskPrice == undefined ? 0 : innerElement.AskPrice);
-                  innerElement.AskSize = innerElement.AskSize - size;
-                  innerElement.LastTrade = data.timestamp;
-                  size = 0;
-                  break;
-                } else if (innerElement.AskSize && innerElement.AskSize < size && innerElement.AskSize != 0) {
-                  price = price + innerElement.AskSize * (innerElement.AskPrice == undefined ? 0 : innerElement.AskPrice);
-                  size = size - innerElement.AskSize;
-                  innerElement.AskSize = 0;
-                  innerElement.LastTrade = data.timestamp;
-                }
-              }
+
+            if (element.Symbol != data.symbol || !element.Children || element.Children.length <= 0) {
+              continue;
             }
-    
-            await this.channel!.broadcast({
-              type: topic,
-              result: {
-                success: true,
-                action: "BUY",
-                tradePrice: price
-              }
-            });
-  
-            this.subject.next(
-              {
-                Symbol: data.symbol,
-                DataSource: ELEMENT_DATA
-              });
-  
-            return;
-          }
-  
-          //It's selling the symbols - probably on the highest seller value (as it's not defined in this poc)
-          let symbolElement: SymbolElement | undefined;
-  
-          ELEMENT_DATA.forEach((symbol) => {
-            if (symbol.Symbol != data.symbol) {
-              return;
-            }
-            if (symbol.Children && symbol.Children.length > 0) {
-              symbolElement = symbol.Children.reduce((prev, current) => {
-                if (prev.BidPrice && current.BidPrice
-                  && prev.BidPrice > current.BidPrice) {
-                    return prev;
-                  }
-  
-                  return current;
-              });
-            }
-          });
-  
-          if(symbolElement) {
-            symbolElement.BidSize = symbolElement.BidSize + data.quantity;
-            symbolElement.LastTrade = data.timestamp;
-            await this.channel!.broadcast(
-              {
+
+            if (element.Children.at(0) && element.Children.at(0)?.AskSize && element.Children.at(0)!.AskSize! >= data.quantity) {
+              element.Children.at(0)!.AskSize! = element.Children.at(0)!.AskSize! - data.quantity;
+              element.Children.at(0)!.LastTrade = data.timestamp;
+              price = element.Children.at(0)!.AskPrice != undefined ? element.Children.at(0)!.AskPrice! * data.quantity : 0;
+              size = 0;
+
+              await this.channel!.broadcast({
                 type: topic,
                 result: {
                   success: true,
-                  action: "SELL",
+                  action: "BUY",
+                  tradePrice: price
                 }
               });
-            this.subject.next(
-            {
-              Symbol: data.symbol,
-              DataSource: [...ELEMENT_DATA]
-            });
-          } else {
-            await this.channel!.broadcast(
-              {
-                type: topic,
-                result: {
-                  success: false,
-                  action: "SELL",
-                  error: "Trader is not able to place its symbol for selling."
-                }
-              });
+
+              break;
+            }
+            
+            for (let innerElement of element.Children) {
+              if (innerElement.Symbol != data.symbol) {
+                continue;
+              }
+
+              if (innerElement.AskSize && innerElement.AskSize >= size) {
+                price = price + size * (innerElement.AskPrice == undefined ? 0 : innerElement.AskPrice);
+                innerElement.AskSize = innerElement.AskSize - size;
+                innerElement.LastTrade = data.timestamp;
+                size = 0;
+                break;
+              } else if (innerElement.AskSize && innerElement.AskSize < size && innerElement.AskSize != 0) {
+                price = price + innerElement.AskSize * (innerElement.AskPrice == undefined ? 0 : innerElement.AskPrice);
+                size = size - innerElement.AskSize;
+                innerElement.AskSize = 0;
+                innerElement.LastTrade = data.timestamp;
+              }
+            }
           }
   
+          await this.channel!.broadcast({
+            type: topic,
+            result: {
+              success: true,
+              action: "BUY",
+              tradePrice: price
+            }
+          });
+
+          this.subject.next(
+            {
+              Symbol: data.symbol,
+              DataSource: ELEMENT_DATA
+            });
+
           return;
+        }
+
+        //It's selling the symbols - probably on the highest seller value (as it's not defined in this poc)
+        let symbolElement: SymbolElement | undefined;
+
+        ELEMENT_DATA.forEach((symbol) => {
+          if (symbol.Symbol != data.symbol) {
+            return;
+          }
+          if (symbol.Children && symbol.Children.length > 0) {
+            symbolElement = symbol.Children.reduce((prev, current) => {
+              if (prev.BidPrice && current.BidPrice
+                && prev.BidPrice > current.BidPrice) {
+                  return prev;
+                }
+
+                return current;
+            });
+          }
         });
-  
-        this.listeners.push(listener);
-  
-      } catch (err) {
-        console.error(err);
-      }
-    });
+
+        if(symbolElement) {
+          symbolElement.BidSize = symbolElement.BidSize + data.quantity;
+          symbolElement.LastTrade = data.timestamp;
+          await this.channel!.broadcast(
+            {
+              type: topic,
+              result: {
+                success: true,
+                action: "SELL",
+              }
+            });
+          this.subject.next(
+          {
+            Symbol: data.symbol,
+            DataSource: [...ELEMENT_DATA]
+          });
+        } else {
+          await this.channel!.broadcast(
+            {
+              type: topic,
+              result: {
+                success: false,
+                action: "SELL",
+                error: "Trader is not able to place its symbol for selling."
+              }
+            });
+        }
+
+        return;
+      });
+
+      this.listeners.push(listener);
+
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   public displayedColumns: string[] = ['Symbol', 'Description', 'AskPrice', 'AskSize', 'BidPrice', 'BidSize', 'LastTrade'];

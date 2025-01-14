@@ -12,7 +12,7 @@ let currentChannel;
 
 NoDataToDisplay(Highcharts);
 
-window.addEventListener('fdc3Ready', async() => {
+window.addEventListener('load', async() => {
   chart = Highcharts.chart('container', {
 
       chart: {

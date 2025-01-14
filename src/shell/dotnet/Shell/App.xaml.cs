@@ -30,7 +30,6 @@ using MorganStanley.ComposeUI.Fdc3.DesktopAgent.DependencyInjection;
 using MorganStanley.ComposeUI.Messaging;
 using MorganStanley.ComposeUI.ModuleLoader;
 using MorganStanley.ComposeUI.Shell.Abstractions;
-using MorganStanley.ComposeUI.Shell.EmbeddedBrowser;
 using MorganStanley.ComposeUI.Shell.Fdc3;
 using MorganStanley.ComposeUI.Shell.Fdc3.ResolverUI;
 using MorganStanley.ComposeUI.Shell.Messaging;
@@ -69,10 +68,10 @@ public partial class App : Application
     public WebContent CreateWebContent(params object[] parameters)
     {
         Dispatcher.VerifyAccess();
+
         var webContent = CreateInstance<WebContent>(parameters);
         _shellWindow!.AddDockableFloatingContent(webContent);
-
-        return webContent;
+        return webContent!;
     }
 
     public T? GetService<T>()
@@ -157,8 +156,6 @@ public partial class App : Application
 
         ConfigureFdc3();
 
-        ConfigureEmbeddedBrowser();
-
         void ConfigureMessageRouter()
         {
             // TODO: Extensibility: plugins should be able to configure the service collection.
@@ -212,10 +209,6 @@ public partial class App : Application
                     fdc3ConfigurationSection.GetSection(nameof(fdc3Options.AppDirectory)));
             }
         }
-
-        void ConfigureEmbeddedBrowser() {
-            services.AddTransient<IStartupAction, EmbeddedBrowserStartupAction>();
-        }
     }
 
     // Add any feature-specific async init code that depends on a running Host to this method 
@@ -258,6 +251,7 @@ public partial class App : Application
         }
 
         ShutdownMode = ShutdownMode.OnMainWindowClose;
+
         _shellWindow = CreateWindow<MainWindow>();
         _shellWindow.Show();
     }
