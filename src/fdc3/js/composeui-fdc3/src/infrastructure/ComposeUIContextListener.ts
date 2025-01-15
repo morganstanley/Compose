@@ -52,7 +52,6 @@ export class ComposeUIContextListener implements Listener {
             //TODO: integration test
             const context = <Context>JSON.parse(topicMessage.payload!);
             if (!this.contextType || this.contextType == context!.type) {
-
                 if (this.openHandled === true) {
                     this.handler!(context!);
                 } else {
