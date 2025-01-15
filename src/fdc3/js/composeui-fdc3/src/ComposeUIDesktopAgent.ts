@@ -133,9 +133,11 @@ export class ComposeUIDesktopAgent implements DesktopAgent {
             return listener;
         }
 
-        await this.getLastContext(listener);
-
-        return listener;
+        return await new Promise<Listener>((resolve) => {
+            resolve(listener);
+        }).finally(() => {
+            this.getLastContext(listener);
+        });
     }
 
     public async getUserChannels(): Promise<Array<Channel>> {
@@ -162,8 +164,10 @@ export class ComposeUIDesktopAgent implements DesktopAgent {
         this.currentChannel = channel;
 
         for (const listener of this.topLevelContextListeners) {
-            await listener.subscribe(this.currentChannel.id, this.currentChannel.type);
-            await this.getLastContext(listener);
+            await listener.subscribe(this.currentChannel.id, this.currentChannel.type)
+                .finally(() => {
+                    this.getLastContext(listener);
+                });
         }
     }
 
@@ -243,8 +247,7 @@ export class ComposeUIDesktopAgent implements DesktopAgent {
         const lastContext = await this.currentChannel!.getCurrentContext(listener.contextType);
 
         if (lastContext) {
-            //TODO: timing issue
-            setTimeout(async() => await listener.handleContextMessage(lastContext), 100);
+            await listener.handleContextMessage(lastContext);
         }
     }
 }
