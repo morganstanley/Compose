@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" />
     <PackageReference Include="System.Reactive" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
     <PackageReference Include="System.ServiceModel.Primitives" />
   </ItemGroup>
 

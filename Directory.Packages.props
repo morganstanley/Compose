@@ -7,8 +7,8 @@
     <PackageVersion Include="Finos.Fdc3" Version="2.1.0" />
     <PackageVersion Include="Finos.Fdc3.NewtonsoftJson" Version="2.0.0" />
     <PackageVersion Include="Finos.Fdc3.AppDirectory" Version="2.1.0" />
-	<PackageVersion Include="FluentAssertions" Version="[6.12.0, 8.0)"/>
-	<PackageVersion Include="FluentAssertions.Json" Version="[6.1.0, 8.0)" />
+    <PackageVersion Include="FluentAssertions" Version="[6.12.0, 8.0)" />
+    <PackageVersion Include="FluentAssertions.Json" Version="[6.1.0, 8.0)" />
     <PackageVersion Include="Google.Protobuf" Version="3.27.3" />
     <PackageVersion Include="Grpc.AspNetCore.Server" Version="2.65.0" />
     <PackageVersion Include="Grpc.AspNetCore" Version="2.62.0" />
@@ -37,7 +37,7 @@
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
     <PackageVersion Include="Moq.Contrib.HttpClient" Version="1.4.0" />
     <PackageVersion Include="Moq" Version="4.18.4" />
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
     <PackageVersion Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageVersion Include="Roslyn.System.IO.Abstractions.Analyzers" Version="12.2.19" />
