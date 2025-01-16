@@ -37,7 +37,7 @@
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
     <PackageVersion Include="Moq.Contrib.HttpClient" Version="1.4.0" />
     <PackageVersion Include="Moq" Version="4.18.4" />
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="Nito.AsyncEx.Coordination" Version="5.1.2" />
     <PackageVersion Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageVersion Include="Roslyn.System.IO.Abstractions.Analyzers" Version="12.2.19" />

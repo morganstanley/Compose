@@ -15,5 +15,9 @@
     <ProjectReference Include="../../src/Client/MorganStanley.ComposeUI.Messaging.Client.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
 
 </Project>

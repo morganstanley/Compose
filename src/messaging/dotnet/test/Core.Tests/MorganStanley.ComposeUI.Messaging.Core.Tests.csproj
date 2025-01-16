@@ -20,4 +20,8 @@
 	  <Folder Include="Instrumentation\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" />
+	</ItemGroup>
+
 </Project>
