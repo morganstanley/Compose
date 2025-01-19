@@ -1,0 +1,23 @@
+{
+  "name": "@morgan-stanley/composeui-example-adaptive-cards",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "description": "ComposeUI Default App",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "bundle": "rollup -c",
+    "build": "npm run clean && npm run bundle",
+    "start": "http-server -p 6060"
+  },
+  "devDependencies": {
+    "http-server": "14.1.1",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.24.0"
+  },
+  "dependencies": {
+    "@morgan-stanley/adaptive-card-notification": "*",
+    "adaptivecards": "^1.3.1"
+  }
+}

@@ -1,4 +1,4 @@
-﻿{
+{
   "profiles": {
     "Chart and grid": {
       "commandName": "Project",
@@ -15,6 +15,10 @@
     "PrivateChannels": {
       "commandName": "Project",
       "commandLineArgs": "--ModuleCatalog:CatalogUrl \"file:///$(ProjectDir)..\\examples\\module-catalog.json\" --FDC3:AppDirectory:Source $(ComposeUIRepositoryRoot)/examples/fdc3-appdirectory/privatechannels.json"
+    },
+    "adaptive cards": {
+      "commandName": "Project",
+      "commandLineArgs": "--FDC3:EnableFdc3=false\r\n--ModuleCatalog:CatalogUrl \"file:///$(ProjectDir)..\\examples\\module-catalog.json\""
     }
   }
 }

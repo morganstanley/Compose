@@ -103,5 +103,13 @@
     "Details": {
       "Url": "http://localhost:4202/"
     }
+  },
+  {
+    "Id": "adaptive-cards",
+    "Name": "Adaptive Cards Notifications Example",
+    "ModuleType": "web",
+    "Details": {
+      "Url": "http://localhost:6060/"
+    }
   }
 ]

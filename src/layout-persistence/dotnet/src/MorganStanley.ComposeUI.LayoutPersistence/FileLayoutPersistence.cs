@@ -16,16 +16,14 @@ using MorganStanley.ComposeUI.LayoutPersistence.Abstractions;
 
 namespace MorganStanley.ComposeUI.LayoutPersistence;
 
-public class FileLayoutPersistence<T> : ILayoutPersistence<T>
+public class FileLayoutPersistence : ILayoutPersistence<string>
 {
     private readonly string _basePath;
-    private readonly ILayoutSerializer<T> _serializer;
     private readonly SemaphoreSlim _semaphore = new(1,1);
 
-    public FileLayoutPersistence(string basePath, ILayoutSerializer<T> serializer)
+    public FileLayoutPersistence(string basePath)
     {
         _basePath = NormalizeFilePath(basePath);
-        _serializer = serializer;
 
         if (!Directory.Exists(_basePath))
         {
@@ -33,7 +31,7 @@ public class FileLayoutPersistence<T> : ILayoutPersistence<T>
         }
     }
 
-    public async Task SaveLayoutAsync(string layoutName, T layoutData, CancellationToken cancellationToken = default)
+    public async Task SaveLayoutAsync(string layoutName, string layoutData, CancellationToken cancellationToken = default)
     {
         var filePath = GetFilePath(layoutName);
 
@@ -41,8 +39,7 @@ public class FileLayoutPersistence<T> : ILayoutPersistence<T>
 
         try
         {
-            var serializedData = await _serializer.SerializeAsync(layoutData, cancellationToken);
-            await File.WriteAllTextAsync(filePath, serializedData, cancellationToken);
+            await File.WriteAllTextAsync(filePath, layoutData, cancellationToken);
         }
         finally 
         {
@@ -50,7 +47,7 @@ public class FileLayoutPersistence<T> : ILayoutPersistence<T>
         }
     }
 
-    public async Task<T?> LoadLayoutAsync(string layoutName, CancellationToken cancellationToken = default)
+    public async Task<string?> LoadLayoutAsync(string layoutName, CancellationToken cancellationToken = default)
     {
         var filePath = GetFilePath(layoutName);
 
@@ -63,8 +60,7 @@ public class FileLayoutPersistence<T> : ILayoutPersistence<T>
 
         try
         {
-            var serializedData = await File.ReadAllTextAsync(filePath, cancellationToken);
-            return await _serializer.DeserializeAsync(serializedData, cancellationToken);
+            return await File.ReadAllTextAsync(filePath, cancellationToken);
         }
         finally
         { 

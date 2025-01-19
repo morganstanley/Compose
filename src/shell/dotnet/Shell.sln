@@ -56,6 +56,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{1944F009-EA2D-4D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MorganStanley.ComposeUI.Messaging.Abstractions", "..\..\messaging\dotnet\src\Abstractions\MorganStanley.ComposeUI.Messaging.Abstractions.csproj", "{F90449AE-B26E-42E0-873B-4F0CAE6FCD98}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MorganStanley.ComposeUI.LayoutPersistence", "..\..\layout-persistence\dotnet\src\MorganStanley.ComposeUI.LayoutPersistence\MorganStanley.ComposeUI.LayoutPersistence.csproj", "{DF5677FE-614D-4BD1-A645-119FBA6F3C34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{F90449AE-B26E-42E0-873B-4F0CAE6FCD98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F90449AE-B26E-42E0-873B-4F0CAE6FCD98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F90449AE-B26E-42E0-873B-4F0CAE6FCD98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF5677FE-614D-4BD1-A645-119FBA6F3C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF5677FE-614D-4BD1-A645-119FBA6F3C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF5677FE-614D-4BD1-A645-119FBA6F3C34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF5677FE-614D-4BD1-A645-119FBA6F3C34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,6 +139,7 @@ Global
 		{B7A04459-C612-447F-9245-75DFAF23C31D} = {DA1A43C4-F758-47E2-870A-7E5BBB946671}
 		{56F41D4A-5A4C-4F41-86CA-1B003992F083} = {DA1A43C4-F758-47E2-870A-7E5BBB946671}
 		{F90449AE-B26E-42E0-873B-4F0CAE6FCD98} = {E7A2C581-4BF4-47A5-8A11-59B2DEBADCA7}
+		{DF5677FE-614D-4BD1-A645-119FBA6F3C34} = {E7A2C581-4BF4-47A5-8A11-59B2DEBADCA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4C901E6C-4B9A-48C2-AB16-461040DC57B4}

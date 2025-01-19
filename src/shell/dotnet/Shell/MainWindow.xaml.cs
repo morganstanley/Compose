@@ -10,14 +10,17 @@
 // or implied. See the License for the specific language governing permissions
 // and limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MorganStanley.ComposeUI.LayoutPersistence.Abstractions;
 using MorganStanley.ComposeUI.ModuleLoader;
 using MorganStanley.ComposeUI.Shell.ImageSource;
+using MorganStanley.ComposeUI.Shell.Layout;
 using MorganStanley.ComposeUI.Shell.Utilities;
 
 namespace MorganStanley.ComposeUI.Shell;
@@ -30,17 +33,24 @@ public partial class MainWindow : RibbonWindow
     private readonly IModuleLoader _moduleLoader;
     private readonly IModuleCatalog _moduleCatalog;
     private readonly ImageSourceProvider _iconProvider;
+    private readonly ILayoutPersistence<string> _layoutPersistence;
+    private readonly LayoutManager _layoutManager;
 
     public MainWindow(
         IModuleCatalog moduleCatalog,
         IModuleLoader moduleLoader,
+        ILayoutPersistence<string> layoutPersistence,
         IImageSourcePolicy? imageSourcePolicy = null)
     {
         _moduleCatalog = moduleCatalog;
         _moduleLoader = moduleLoader;
+        _layoutPersistence = layoutPersistence;
         _iconProvider = new ImageSourceProvider(imageSourcePolicy ?? new DefaultImageSourcePolicy());
 
         InitializeComponent();
+        SelectModulesTab();
+
+        _layoutManager = new LayoutManager(_xamDockManager, _moduleLoader, _layoutPersistence);
     }
 
     private async void RibbonWindow_Initialized(object sender, System.EventArgs e)
@@ -62,7 +72,14 @@ public partial class MainWindow : RibbonWindow
 
     public void AddDockableFloatingContent(WebContent webContent)
     {
-        _verticalSplit.Panes.Add(new WebContentPane(webContent, _moduleLoader));
+        if (_layoutManager.IsLayoutLoading)
+        {
+            _layoutManager.AddAndSetModuleContentState(webContent);
+        }
+        else
+        {
+            _verticalSplit.Panes.Add(new WebContentPane(webContent, _moduleLoader));
+        }
     }
 
     internal MainWindowViewModel ViewModel
@@ -130,5 +147,30 @@ public partial class MainWindow : RibbonWindow
         public IModuleManifest Manifest { get; }
 
         public System.Windows.Media.ImageSource? ImageSource { get; }
+    }
+
+    private async void LoadLayout_Click(object sender, RoutedEventArgs e)
+    {
+        await _layoutManager.LoadLayoutAsync();
+        SelectModulesTab();
+    }
+
+    private async void SaveLayout_Click(object sender, RoutedEventArgs e)
+    {
+        await _layoutManager.SaveLayoutAsync();
+        SelectModulesTab();
+    }
+
+    private void XamDockManager_InitializePaneContent(object sender, Infragistics.Windows.DockManager.Events.InitializePaneContentEventArgs e)
+    {
+        if (_layoutManager.WebContentPanes != null && _layoutManager.WebContentPanes.TryGetValue(e.NewPane.SerializationId, out var webContentPane))
+        {
+            e.NewPane = webContentPane;
+        }
+    }
+
+    private void SelectModulesTab()
+    {
+        Ribbon.SelectedIndex = 1;
     }
 }

@@ -33,6 +33,12 @@ See the License for the specific language governing permissions and limitations 
                 <RibbonApplicationMenu Visibility="Collapsed">
                 </RibbonApplicationMenu>
             </Ribbon.ApplicationMenu>
+            <RibbonTab Header="Shell">
+                <RibbonGroup Header="Actions">
+                    <RibbonButton Name="SaveButton" Label="Save Layout" Click="SaveLayout_Click" />
+                    <RibbonButton Name="LoadButton" Label="Load Layout" Click="LoadLayout_Click" />
+                </RibbonGroup>
+            </RibbonTab>
             <!-- Ribbon Tab #1: Modules -->
             <RibbonTab Header="Modules" HorizontalAlignment="Left" Height="Auto" VerticalAlignment="Top">
                 <RibbonGroup x:Name="Modules" Header="Modules" Height="Auto" ItemsSource="{Binding Modules}">
@@ -57,6 +63,7 @@ See the License for the specific language governing permissions and limitations 
                                    AllowMaximizeFloatingWindows="True"
                                    AllowMinimizeFloatingWindows="True"
                                    ShowFloatingWindowsInTaskbar="True"
+                                   InitializePaneContent="XamDockManager_InitializePaneContent"
                                    LayoutMode="FillContainer">
                 <igDock:XamDockManager.Panes>
                     <igDock:SplitPane x:Name="_verticalSplit" SplitterOrientation="Vertical" igDock:XamDockManager.InitialLocation="DockedLeft" />

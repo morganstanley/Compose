@@ -61,6 +61,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\fdc3\dotnet\AppDirectory\src\MorganStanley.ComposeUI.AppDirectory\MorganStanley.ComposeUI.AppDirectory.csproj" />
 		<ProjectReference Include="..\..\..\fdc3\dotnet\DesktopAgent\src\MorganStanley.ComposeUI.DesktopAgent\MorganStanley.ComposeUI.DesktopAgent.csproj" />
+		<ProjectReference Include="..\..\..\layout-persistence\dotnet\src\MorganStanley.ComposeUI.LayoutPersistence\MorganStanley.ComposeUI.LayoutPersistence.csproj" />
 		<ProjectReference Include="..\..\..\messaging\dotnet\src\Host\MorganStanley.ComposeUI.Messaging.Host.csproj" />
 		<ProjectReference Include="..\..\..\module-loader\dotnet\src\MorganStanley.ComposeUI.ModuleLoader.Abstractions\MorganStanley.ComposeUI.ModuleLoader.Abstractions.csproj" />
 		<ProjectReference Include="..\..\..\module-loader\dotnet\src\MorganStanley.ComposeUI.ModuleLoader\MorganStanley.ComposeUI.ModuleLoader.csproj" />

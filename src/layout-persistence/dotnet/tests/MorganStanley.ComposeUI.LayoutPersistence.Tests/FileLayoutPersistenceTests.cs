@@ -12,19 +12,19 @@
  * and limitations under the License.
  */
 
+using System.Text.Json;
 using FluentAssertions;
-using MorganStanley.ComposeUI.LayoutPersistence.Serializers;
 
 namespace MorganStanley.ComposeUI.LayoutPersistence.Tests;
 
 public class FileLayoutPersistenceTests : IDisposable
 {
     private readonly string _testDirectory = "test_layouts";
-    private readonly FileLayoutPersistence<LayoutData> _persistence;
+    private readonly FileLayoutPersistence _persistence;
 
     public FileLayoutPersistenceTests()
     {
-        _persistence = new FileLayoutPersistence<LayoutData>($"file://{_testDirectory}", new JsonLayoutSerializer<LayoutData>());
+        _persistence = new FileLayoutPersistence($"file://{_testDirectory}");
     }
 
     [Fact]
@@ -38,9 +38,10 @@ public class FileLayoutPersistenceTests : IDisposable
             }   
         };
 
+        var serializedLayout = JsonSerializer.Serialize(layoutData);
         var layoutName = "TestLayout";
 
-        await _persistence.SaveLayoutAsync(layoutName, layoutData);
+        await _persistence.SaveLayoutAsync(layoutName, serializedLayout);
         var filePath = Path.Combine(_testDirectory, "TestLayout.layout");
 
         File.Exists(filePath).Should().BeTrue();
@@ -57,12 +58,13 @@ public class FileLayoutPersistenceTests : IDisposable
             }
         };
 
+        var serializedLayout = JsonSerializer.Serialize(layoutData);
         var layoutName = "TestLayout";
 
-        await _persistence.SaveLayoutAsync(layoutName, layoutData);
+        await _persistence.SaveLayoutAsync(layoutName, serializedLayout);
         var loadedData = await _persistence.LoadLayoutAsync(layoutName);
 
-        loadedData.Should().Be(layoutData);
+        loadedData.Should().Be(serializedLayout);
     }
 
     [Fact]
@@ -76,9 +78,10 @@ public class FileLayoutPersistenceTests : IDisposable
             }
         };
 
+        var serializedLayout = JsonSerializer.Serialize(layoutData);
         var layoutName = "../TestLayout";
 
-        Func<Task> act = async () => await _persistence.SaveLayoutAsync(layoutName, layoutData);
+        Func<Task> act = async () => await _persistence.SaveLayoutAsync(layoutName, serializedLayout);
         await act.Should().ThrowAsync<ArgumentException>()
            .WithMessage("Invalid layoutName argument. File cannot be saved outside of the base directory. *");
     }

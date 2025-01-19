@@ -1,10 +1,11 @@
-﻿﻿import Chart from 'highcharts/es-modules/Core/Chart/Chart.js';
-import ColumnSeries from 'highcharts/es-modules/Series/Column/ColumnSeries.js';
+﻿﻿import NoDataToDisplay from 'highcharts/modules/no-data-to-display.js';
 import * as Highcharts from 'highcharts';
 import { createMessageRouter } from "@morgan-stanley/composeui-messaging-client";
 
 let chart;
 let client;
+
+NoDataToDisplay(Highcharts);
 
 window.addEventListener('load', function () {
   chart = Highcharts.chart('container', {
@@ -37,15 +38,6 @@ window.addEventListener('load', function () {
     }]
   });
 });
-
-  window.document.getElementById("close-button").onclick =
-    async ev => {
-      if (!client) return;
-      const tmpClient = client;
-      client = undefined;
-      tmpClient.close();
-    };
-
 
 async function requestData() {
 
